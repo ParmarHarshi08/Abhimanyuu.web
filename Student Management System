@@ -1,0 +1,137 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Student {
+public:
+    int student_id;
+    string name;
+    float marks;
+    string course;
+
+    Student(int id, string n, float m, string c) {
+        student_id = id;
+        name = n;
+        marks = m;
+        course = c;
+    }
+
+    void display() {
+        cout << "ID: " << student_id
+             << " Name: " << name
+             << " Marks: " << marks
+             << " Course: " << course << endl;
+    }
+};
+
+
+class StudentManagementSystem {
+private:
+    vector<Student> students;
+    vector<Student> undo_stack; 
+
+public:
+    void add_student() {
+        int sid;
+        string name, course;
+        float marks;
+
+        cout << "Enter Student ID: ";
+        cin >> sid;
+        cout << "Enter Name: ";
+        cin >> name;
+        cout << "Enter Marks: ";
+        cin >> marks;
+        cout << "Enter Course: ";
+        cin >> course;
+
+        students.push_back(Student(sid, name, marks, course));
+        cout << "Successfully added!\n";
+    }
+
+    void delete_student() {
+        int sid;
+        cout << "Enter ID to delete: ";
+        cin >> sid;
+
+        for (int i = 0; i < students.size(); i++) {
+            if (students[i].student_id == sid) {
+
+                undo_stack.push_back(students[i]); 
+                cout << "Record for " << students[i].name << " deleted.\n";
+
+                students.erase(students.begin() + i);
+                return;
+            }
+        }
+        cout << "Student ID not found.\n";
+    }
+
+
+    void search_student() {
+        int sid;
+        cout << "Enter ID to search: ";
+        cin >> sid;
+
+        for (auto &student : students) {
+            if (student.student_id == sid) {
+                cout << "Found: ";
+                student.display();
+                return;
+            }
+        }
+        cout << "Student not found.\n";
+    }
+
+
+    void sort_by_marks() {
+        int n = students.size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (students[j].marks < students[j + 1].marks) {
+
+                    
+                    Student temp = students[j];
+                    students[j] = students[j + 1];
+                    students[j + 1] = temp;
+                }
+            }
+        }
+        cout << "Students sorted by marks (Highest to Lowest).\n";
+    }
+
+
+    void display_all() {
+        if (students.empty()) {
+            cout << "No records to display.\n";
+        } else {
+            cout << "\n--- Current Student Records ---\n";
+            for (auto &s : students) {
+                s.display();
+            }
+        }
+    }
+};
+
+
+int main() {
+    StudentManagementSystem sms;
+    int choice;
+
+    while (true) {
+        cout << "\n1. Add  2. Delete  3. Undo  4. Search  5. Sort  6. Display  7. Exit\n";
+        cout << "Select an option: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: sms.add_student(); break;
+            case 2: sms.delete_student(); break;
+            case 3: sms.search_student(); break;
+            case 4: sms.sort_by_marks(); break;
+            case 5: sms.display_all(); break;
+            case 6: return 0;
+            default: cout << "Invalid selection.\n";
+        }
+    }
+}
